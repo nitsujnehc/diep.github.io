@@ -1,4 +1,4 @@
-// MESS AROUND WITH THIS PART ONLY
+/// MESS AROUND WITH THIS PART ONLY
 
 var mvtSpeed = 5; //default is set to 5
 var bulletSpeed = 2; //default is set to 2
@@ -25,29 +25,23 @@ var centerX = width/2; //tank location Y
 var bulletX = width/2; //bullet location X
 var bulletY = height/2; //bullet location Y
 
-var Bullet = function(x, y, speedB, angleB, colorB) {
+var Bullet = function(x, y, speed, angleB, color) {
     this.x = x;
     this.y = y;
-    this.speedB = speedB;
+    this.speed = speed;
     this.angleB = angleB;
-    this.colorB = colorB;
+    this.color = color;
 };
 
 Bullet.prototype.draw = function() {
     fill(this.color);
     ellipse(this.x, this.y, 10, 10);
-}; //draw bullet
+};
 Bullet.prototype.move = function() {
-    pushMatrix();
-    rotate(this.angleB);
     bulletX += this.speed;
-    popMatrix();
-}; //move bullet
+};
 
-var bullet; //create bullet for later use
-
-bulletX = centerX; //set bulletX
-bulletY = centerY; //set bulletY
+var bullet = new Bullet(bulletX, bulletY, bulletSpeed, angle, tankRed);
 
 var tank = function(color) {
     pushMatrix();
@@ -111,17 +105,6 @@ var flankGuard = function(color) {
     popMatrix();
 }; //flank guard
 
-var machineGun = function(color) {
-    pushMatrix();
-    translate(centerX, centerY);
-    rotate(angle);
-    fill(100, 100, 100);
-    quad(-10, -10, -10, 10, 50, -25, 50, 25);
-    fill(color);
-    ellipse(0, 0, width/8*tankSize, height/8*tankSize);
-    popMatrix();
-}; //machine gun
-
 var coordinateFinder = function() {
     fill(0);
     point(mouseX, mouseY);
@@ -141,19 +124,23 @@ var getAngle = function() {
     return angle;
 }; //use arcsin to make tank face mouse-pointer
 
+
+
+
 draw = function() {
     background(200); //background and smear preventer
-    
-    machineGun(tankRed); //draw tank
+    if (shoot) {
+     bullet.move();
+    bullet.draw();
+    }
+    tank(tankRed); //draw tank
     angleMode = "radians"; //set angle type for rotation
     
     if(shoot) {
-        bullet.draw();
         bullet.move();
-        shoot = false;
     }
     
-    if(spinning) {
+    if(spinning===true) {
         angle+=0.02;
     } //auto spin
     else{
@@ -163,7 +150,7 @@ draw = function() {
     
     
     //debugging stuff:
-        //coordinateFinder();
+        coordinateFinder();
         //println("centerX: " + centerX + ", centerY: " + centerY);
 };
 
@@ -186,7 +173,10 @@ keyPressed = function() {
     }
 }; //use WASD or arrows to move //use C for auto spin //use E for auto fire(still implementing shooting)
 
-mouseClicked = function() {
+mousePressed = function() {
+    bulletX = centerX; //set bulletX
+    bulletY= centerY; //set bulletY
     bullet = new Bullet(bulletX, bulletY, bulletSpeed, angle, tankRed);
+    bullet.draw();
     shoot = true;
-}; //create bullet when clicked
+};
